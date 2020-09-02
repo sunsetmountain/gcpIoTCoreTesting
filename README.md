@@ -4,7 +4,7 @@ From the IoT device...
 
 sudo apt-get -y install git
 git clone https://github.com/sunsetmountain/gcpIoTCoreTesting
-cd gcpIotCoreTesting
+cd gcpIoTCoreTesting
 chmod +x generate_keys.sh initialsoftware.sh get_google_key.sh launchTest.sh 
 ./initialsoftware.sh
 ./get_google_key.sh
