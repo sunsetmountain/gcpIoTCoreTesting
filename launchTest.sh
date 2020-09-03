@@ -5,4 +5,4 @@
 #device-id
 #registry-id
 
-python3 mqtt_test.py --algorithm ES256 --ca_certs roots.pem --cloud_region cloud-region --project_id project-id --device_id device-id --private_key_file ec_private.pem --registry_id registry-id --mqtt_bridge_port 443
+python3 mqttTest.py --algorithm ES256 --ca_certs roots.pem --private_key_file ec_private_at_bat.pem --mqtt_bridge_port 443 --cloud_region cloud-region --project_id project-id --device_id device-id --registry_id registry-id
