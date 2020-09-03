@@ -5,10 +5,10 @@ From the IoT device...
 sudo apt-get -y install git<br/>
 git clone https://github.com/sunsetmountain/gcpIoTCoreTesting<br/>
 cd gcpIoTCoreTesting<br/>
-chmod +x generate_keys.sh initialsoftware.sh get_google_key.sh launchTest.sh <br/>
-./initialsoftware.sh<br/>
-./get_google_key.sh<br/>
-./generate_keys.sh<br/>
+chmod +x generateInitialKeys.sh initialSoftware.sh getGoogleKey.sh launchTest.sh <br/>
+./initialSoftware.sh<br/>
+./getGoogleKey.sh<br/>
+./generateInitialKeys.sh<br/>
 
 Edit the launchTest.sh file and replace cloud-region, project-id, device-id and registry-id
 
