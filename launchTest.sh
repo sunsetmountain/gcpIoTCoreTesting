@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Script to run the example script
 #Before first run, make sure to edit/replace...
 #cloud-region
