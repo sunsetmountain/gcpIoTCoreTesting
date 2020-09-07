@@ -239,13 +239,6 @@ def parse_command_line_args():
             default=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
             help='Path to service account json file.')
 
-    # Command subparser
-    command = parser.add_subparsers(dest='command')
-
-    command.add_parser(
-        'device_demo',
-        help=mqtt_device_demo.__doc__)
-
     return parser.parse_args()
 
 def mqtt_device_run(args):
