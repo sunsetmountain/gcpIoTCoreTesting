@@ -260,8 +260,8 @@ def mqtt_device_run(args):
 
     mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
 
-    cert_iat = datetime.datetime.utcnow()
-    cert_exp_mins = args.cert_expires_minutes
+    #cert_iat = datetime.datetime.utcnow()
+    #cert_exp_mins = args.cert_expires_minutes
     jwt_iat = datetime.datetime.utcnow()
     jwt_exp_mins = args.jwt_expires_minutes
     client = get_client(
@@ -293,19 +293,19 @@ def mqtt_device_run(args):
         print('Publishing message {}/{}: \'{}\''.format(
                 i, args.num_messages, payload))
 
-        # [START iot_mqtt_cert_refresh]
-        seconds_since_issue = (datetime.datetime.utcnow() - cert_iat).seconds
-        if seconds_since_issue > 60 * cert_exp_mins:
-            print('Refreshing cert after {}s'.format(seconds_since_issue))
-            cert_iat = datetime.datetime.utcnow()
-            client.loop()
-            client.disconnect()
-            client = get_client(
-                args.project_id, args.cloud_region,
-                args.registry_id, args.device_id, args.private_key_file,
-                args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
-                args.mqtt_bridge_port)
-        # [END iot_mqtt_cert_refresh]
+        ## [START iot_mqtt_cert_refresh]
+        #seconds_since_issue = (datetime.datetime.utcnow() - cert_iat).seconds
+        #if seconds_since_issue > 60 * cert_exp_mins:
+        #    print('Refreshing cert after {}s'.format(seconds_since_issue))
+        #    cert_iat = datetime.datetime.utcnow()
+        #    client.loop()
+        #    client.disconnect()
+        #    client = get_client(
+        #        args.project_id, args.cloud_region,
+        #        args.registry_id, args.device_id, args.private_key_file,
+        #        args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
+        #        args.mqtt_bridge_port)
+        ## [END iot_mqtt_cert_refresh]
         
         
         # [START iot_mqtt_jwt_refresh]
