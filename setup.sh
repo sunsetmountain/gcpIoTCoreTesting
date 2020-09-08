@@ -3,7 +3,7 @@
 # get unique identifier for the device
 uniqueID=$(sudo cat /sys/class/dmi/id/product_uuid)
 echo $uniqueID
-echo $uniqueID > device-id.txt
+echo $uniqueID > unique-id.txt
 
 # install software from repository
 sudo apt-get -y install git
