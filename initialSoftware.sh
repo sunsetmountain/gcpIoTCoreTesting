@@ -5,6 +5,7 @@ sudo apt-get -y install build-essential libssl-dev python3-dev libffi-dev python
 sudo pip3 install -r requirements.txt
 
 # download Google keys
+wget -O roots.pem https://pki.goog/roots.pem
 
 # generate initial keys
 sudo apt-get install -y wget openssl python3-pip
