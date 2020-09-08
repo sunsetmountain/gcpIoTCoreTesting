@@ -254,7 +254,7 @@ def mqtt_device_cert_update(args):
 
     # Publish to the events or state topic based on the flag.
     #sub_topic = 'events' if args.message_type == 'event' else 'state'
-    sub_topic = 'events/test-cert-info'
+    sub_topic = 'events/test-cert-info' # topic for cert updates
 
     mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
 
@@ -314,7 +314,30 @@ def mqtt_device_cert_update(args):
         client.loop() # Gives the Paho MQTT client time to read to/write from buffers
     # [END iot_mqtt_cert_update]
 
-
+def check_for_cert_rotation():
+        # [START check_for_cert_rotation]
+        # Find the amount of time since a cert was issued
+        at_bat_dt=os.path.getmtime('ec_public_at_bat.pem') # get the datetime stamp on the public key file
+        at_bat_cert_iat=datetime.datetime.utcfromtimestamp(at_bat_dt) # convert the datetime stamp to UTC
+        on_deck_dt=os.path.getmtime('ec_public_on_deck.pem')
+        on_deck_cert_iat=datetime.datetime.utcfromtimestamp(on_deck_dt)
+        print('At-bat cert issued at: {}'.format(at_bat_cert_iat))
+        print('On-deck cert issued at: {}'.format(on_deck_cert_iat))
+        timeNow=datetime.datetime.utcnow()
+        print('UTC now: {}'.format(timeNow))
+        at_bat_time_difference = timeNow - at_bat_cert_iat
+        at_bat_seconds_since_issue = at_bat_time_difference.days * 24 * 3600 + at_bat_time_difference.seconds
+        on_deck_time_difference = timeNow - on_deck_cert_iat
+        on_deck_seconds_since_issue = on_deck_time_difference.days * 24 * 3600 + on_deck_time_difference.seconds
+        print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
+        print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
+        
+        if at_bat_seconds_since_issue > 60 * cert_exp_mins:
+            print('Refreshing cert after {}s'.format(at_bat_seconds_since_issue))
+            return True
+        else:
+            return False
+        # [END check_for_cert_rotation]
 
 def mqtt_device_run(args):
     """Connects a device, sends data, and receives data."""
@@ -363,34 +386,18 @@ def mqtt_device_run(args):
 
         ## [START iot_mqtt_cert_refresh]
         # Find the amount of time since a cert was issued
-        at_bat_dt=os.path.getmtime('ec_public_at_bat.pem') # get the datetime stamp on the public key file
-        at_bat_cert_iat=datetime.datetime.utcfromtimestamp(at_bat_dt) # convert the datetime stamp to UTC
-        on_deck_dt=os.path.getmtime('ec_public_on_deck.pem')
-        on_deck_cert_iat=datetime.datetime.utcfromtimestamp(on_deck_dt)
-        print('At-bat cert issued at: {}'.format(at_bat_cert_iat))
-        print('On-deck cert issued at: {}'.format(on_deck_cert_iat))
-        timeNow=datetime.datetime.utcnow()
-        print('UTC now: {}'.format(timeNow))
-        at_bat_time_difference = timeNow - at_bat_cert_iat
-        at_bat_seconds_since_issue = at_bat_time_difference.days * 24 * 3600 + at_bat_time_difference.seconds
-        on_deck_time_difference = timeNow - on_deck_cert_iat
-        on_deck_seconds_since_issue = on_deck_time_difference.days * 24 * 3600 + on_deck_time_difference.seconds
-        print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
-        print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
+        time_to_rotate_cert = check_for_cert_rotation()
         
-        if at_bat_seconds_since_issue > 60 * cert_exp_mins:
-            print('Refreshing cert after {}s'.format(seconds_since_issue))
+        if time_to_rotate_cert == True:
             #mqtt_device_cert_update()
         #    ##Create new certs and send them upstream
-        #    client.loop()
-        #    client.disconnect()
-        #    client = get_client(
-        #        args.project_id, args.cloud_region,
-        #        args.registry_id, args.device_id, args.private_key_file,
-        #        args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
-        #        args.mqtt_bridge_port)
-
-        
+            client.loop()
+            client.disconnect()
+            client = get_client(
+                args.project_id, args.cloud_region,
+                args.registry_id, args.device_id, args.private_key_file,
+                args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
+                args.mqtt_bridge_port)
         ## [END iot_mqtt_cert_refresh]
         
         # [START iot_mqtt_jwt_refresh]
