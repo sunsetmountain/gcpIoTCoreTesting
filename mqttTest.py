@@ -200,7 +200,7 @@ def parse_command_line_args():
             help='Expiration time, in minutes, for primary cert.')
     parser.add_argument(
             '--backup_cert_expires_minutes',
-            default=2678400, #31 days
+            default=2419200, #28 days
             type=int,
             help='Expiration time, in minutes, for backup cert.')
     parser.add_argument(
