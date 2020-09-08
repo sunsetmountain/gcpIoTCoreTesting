@@ -273,7 +273,7 @@ def mqtt_device_run(args, keyPayload):
 
     payload = '{}/{}-payload-{}'.format(
             args.registry_id, args.device_id, keyPayload)
-    print('Publishing message: '{}\''.format(
+    print('Publishing message: {}'.format(
             payload))
 
     # [START iot_mqtt_jwt_refresh]
@@ -314,12 +314,12 @@ def main():
     data = {}
     data['certs'] = []
     data['certs'].append({
-        'device-id': deviceID,
-        'key1': key1,
+        'device-id': args.device_id,
+        'key1': key1
     })
     data['certs'].append({
-        'device-id': deviceID,
-        'key2': key2,
+        'device-id': args.device_id,
+        'key2': key2
     })
     keyPayload = json.dumps(data)
     
