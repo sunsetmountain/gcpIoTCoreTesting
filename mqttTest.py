@@ -270,19 +270,19 @@ def mqtt_device_cert_update(args):
     # Process network events.
     client.loop()
 
-    # Wait if backoff is required.
-    if should_backoff:
-        # If backoff time is too large, give up.
-        if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
-            print('Exceeded maximum backoff time. Giving up.')
-            break
+    ## Wait if backoff is required.
+    #if should_backoff:
+    #    # If backoff time is too large, give up.
+    #    if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
+    #        print('Exceeded maximum backoff time. Giving up.')
+    #        break
 
-        # Otherwise, wait and connect again.
-        delay = minimum_backoff_time + random.randint(0, 1000) / 1000.0
-        print('Waiting for {} before reconnecting.'.format(delay))
-        time.sleep(delay)
-        minimum_backoff_time *= 2
-        client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
+    #    # Otherwise, wait and connect again.
+    #    delay = minimum_backoff_time + random.randint(0, 1000) / 1000.0
+    #    print('Waiting for {} before reconnecting.'.format(delay))
+    #    time.sleep(delay)
+    #    minimum_backoff_time *= 2
+    #    client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     payload = '{}/{}-payload-{}'.format(
             args.registry_id, args.device_id, i)
@@ -314,7 +314,7 @@ def mqtt_device_cert_update(args):
         client.loop() # Gives the Paho MQTT client time to read to/write from buffers
     # [END iot_mqtt_cert_update]
 
-def check_for_cert_rotation():
+def check_for_cert_rotation(cert_expires_minutes):
         # [START check_for_cert_rotation]
         # Find the amount of time since a cert was issued
         at_bat_dt=os.path.getmtime('ec_public_at_bat.pem') # get the datetime stamp on the public key file
@@ -332,7 +332,7 @@ def check_for_cert_rotation():
         print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
         print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
         
-        if at_bat_seconds_since_issue > 60 * cert_exp_mins:
+        if at_bat_seconds_since_issue > 60 * cert_expires_minutes:
             print('Refreshing cert after {}s'.format(at_bat_seconds_since_issue))
             return True
         else:
@@ -386,7 +386,7 @@ def mqtt_device_run(args):
 
         ## [START iot_mqtt_cert_refresh]
         # Find the amount of time since a cert was issued
-        time_to_rotate_cert = check_for_cert_rotation()
+        time_to_rotate_cert = check_for_cert_rotation(args.cert_expires_minutes)
         
         if time_to_rotate_cert == True:
             #mqtt_device_cert_update()
