@@ -246,6 +246,76 @@ def parse_command_line_args():
 
     return parser.parse_args()
 
+def mqtt_device_cert_update(args):
+    """Connects a device, sends data, and receives data."""
+    # [START iot_mqtt_run]
+    global minimum_backoff_time
+    global MAXIMUM_BACKOFF_TIME
+
+    # Publish to the events or state topic based on the flag.
+    #sub_topic = 'events' if args.message_type == 'event' else 'state'
+    sub_topic = 'events/test-cert-info'
+
+    mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
+
+    #cert_iat = datetime.datetime.utcnow()
+    #cert_exp_mins = args.cert_expires_minutes
+    jwt_iat = datetime.datetime.utcnow()
+    jwt_exp_mins = args.jwt_expires_minutes
+    client = get_client(
+        args.project_id, args.cloud_region, args.registry_id,
+        args.device_id, args.private_key_file, args.algorithm,
+        args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port)
+
+    # Process network events.
+    client.loop()
+
+    # Wait if backoff is required.
+    if should_backoff:
+        # If backoff time is too large, give up.
+        if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
+            print('Exceeded maximum backoff time. Giving up.')
+            break
+
+        # Otherwise, wait and connect again.
+        delay = minimum_backoff_time + random.randint(0, 1000) / 1000.0
+        print('Waiting for {} before reconnecting.'.format(delay))
+        time.sleep(delay)
+        minimum_backoff_time *= 2
+        client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
+
+    payload = '{}/{}-payload-{}'.format(
+            args.registry_id, args.device_id, i)
+    print('Publishing message {}/{}: \'{}\''.format(
+            i, args.num_messages, payload))
+
+    # [START iot_mqtt_jwt_refresh]
+    seconds_since_issue = (datetime.datetime.utcnow() - jwt_iat).seconds
+    if seconds_since_issue > 60 * jwt_exp_mins:
+        print('Refreshing token after {}s'.format(seconds_since_issue))
+        jwt_iat = datetime.datetime.utcnow()
+        client.loop()
+        client.disconnect()
+        client = get_client(
+            args.project_id, args.cloud_region,
+            args.registry_id, args.device_id, args.private_key_file,
+            args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
+            args.mqtt_bridge_port)
+    # [END iot_mqtt_jwt_refresh]
+
+    # Publish "payload" to the MQTT topic. qos=1 means at least once
+    # delivery. Cloud IoT Core also supports qos=0 for at most once
+    # delivery.
+    client.publish(mqtt_topic, payload, qos=1)
+
+    # Send events every second. State should not be updated as often
+    for i in range(0, 10):
+        time.sleep(1)
+        client.loop() # Gives the Paho MQTT client time to read to/write from buffers
+    # [END iot_mqtt_cert_update]
+
+
+
 def mqtt_device_run(args):
     """Connects a device, sends data, and receives data."""
     # [START iot_mqtt_run]
@@ -310,6 +380,7 @@ def mqtt_device_run(args):
         
         if at_bat_seconds_since_issue > 60 * cert_exp_mins:
             print('Refreshing cert after {}s'.format(seconds_since_issue))
+            #mqtt_device_cert_update()
         #    ##Create new certs and send them upstream
         #    client.loop()
         #    client.disconnect()
