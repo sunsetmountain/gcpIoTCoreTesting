@@ -197,7 +197,12 @@ def parse_command_line_args():
             '--cert_expires_minutes',
             default=10080, #7 days
             type=int,
-            help='Expiration time, in minutes, for certs.')
+            help='Expiration time, in minutes, for primary cert.')
+    parser.add_argument(
+            '--backup_cert_expires_minutes',
+            default=2678400, #31 days
+            type=int,
+            help='Expiration time, in minutes, for backup cert.')
     parser.add_argument(
             '--listen_dur',
             default=60,
@@ -287,10 +292,25 @@ def mqtt_device_run(args):
                 i, args.num_messages, payload))
 
         ## [START iot_mqtt_cert_refresh]
-        #seconds_since_issue = (datetime.datetime.utcnow() - cert_iat).seconds
-        #if seconds_since_issue > 60 * cert_exp_mins:
-        #    print('Refreshing cert after {}s'.format(seconds_since_issue))
-        #    cert_iat = datetime.datetime.utcnow()
+        # Find the amount of time since a cert was issued
+        at_bat_dt=os.path.getmtime('ec_public_at_bat.pem') # get the datetime stamp on the public key file
+        at_bat_cert_iat=datetime.datetime.utcfromtimestamp(at_bat_dt) # convert the datetime stamp to UTC
+        on_deck_dt=os.path.getmtime('ec_public_on_deck.pem')
+        on_deck_cert_iat=datetime.datetime.utcfromtimestamp(on_deck_dt)
+        print('At-bat cert issued at: {}'.format(at_bat_cert_iat))
+        print('On-deck cert issued at: {}'.format(on_deck_cert_iat))
+        timeNow=datetime.datetime.utcnow()
+        print('UTC now: {}'.format(timeNow))
+        at_bat_time_difference = timeNow - at_bat_cert_iat
+        at_bat_seconds_since_issue = at_bat_time_difference.days * 24 * 3600 + at_bat_time_difference.seconds
+        on_deck_time_difference = timeNow - on_deck_cert_iat
+        on_deck_seconds_since_issue = on_deck_time_difference.days * 24 * 3600 + on_deck_time_difference.seconds
+        print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
+        print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
+        
+        if at_bat_seconds_since_issue > 60 * cert_exp_mins:
+            print('Refreshing cert after {}s'.format(seconds_since_issue))
+        #    ##Create new certs and send them upstream
         #    client.loop()
         #    client.disconnect()
         #    client = get_client(
@@ -298,8 +318,9 @@ def mqtt_device_run(args):
         #        args.registry_id, args.device_id, args.private_key_file,
         #        args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
         #        args.mqtt_bridge_port)
-        ## [END iot_mqtt_cert_refresh]
+
         
+        ## [END iot_mqtt_cert_refresh]
         
         # [START iot_mqtt_jwt_refresh]
         seconds_since_issue = (datetime.datetime.utcnow() - jwt_iat).seconds
