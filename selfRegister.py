@@ -304,6 +304,13 @@ def mqtt_device_run(args, keyPayload):
 def main():
     args = parse_command_line_args()
     
+    with open('initialRegistration.json', "r") as f:
+            data = json.load(f)
+            registrationDeviceID = data["device-id"]
+            registrationPublicKey = data["public-key"]
+    f.close()
+    
+    # read public keys
     file = open("ec_public_at_bat.pem", "r")
     key1 = file.read()
     file.close()
@@ -311,6 +318,7 @@ def main():
     key2 = file.read()
     file.close()
     
+    # write public keys to JSON format
     data = {}
     data['certs'] = []
     data['certs'].append({
