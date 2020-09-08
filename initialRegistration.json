@@ -1,4 +1,4 @@
 {
-	"public-key": "../.ssh/ec_public.pem",
+	"private-key": "../.ssh/ec_private.pem",
 	"device-id": "edit-device-id"
 }
