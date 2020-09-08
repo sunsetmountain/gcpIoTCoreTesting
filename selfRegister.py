@@ -246,7 +246,7 @@ def parse_command_line_args():
 
     return parser.parse_args()
 
-def mqtt_device_run(args, keyPayload):
+def mqtt_device_run(args, keyPayload, registrationDeviceID, registrationPrivateKey):
     """Connects a device, sends data, and receives data."""
     # [START iot_mqtt_run]
     global minimum_backoff_time
@@ -256,7 +256,7 @@ def mqtt_device_run(args, keyPayload):
     #sub_topic = 'events' if args.message_type == 'event' else 'state'
     sub_topic = 'events/test-cert-info'
 
-    mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
+    mqtt_topic = '/devices/{}/{}'.format(registrationDeviceID, sub_topic)
 
     #cert_iat = datetime.datetime.utcnow()
     #cert_exp_mins = args.cert_expires_minutes
@@ -264,7 +264,7 @@ def mqtt_device_run(args, keyPayload):
     jwt_exp_mins = args.jwt_expires_minutes
     client = get_client(
         args.project_id, args.cloud_region, args.registry_id,
-        registrationDeviceID, registrationPublicKey, args.algorithm,
+        registrationDeviceID, registrationPrivateKey, args.algorithm,
         args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     # Publish num_messages messages to the MQTT bridge.
@@ -272,7 +272,7 @@ def mqtt_device_run(args, keyPayload):
     client.loop()
 
     payload = '{}/{}-payload-{}'.format(
-            args.registry_id, args.device_id, keyPayload)
+            args.registry_id, registrationDeviceID, keyPayload)
     print('Publishing message: {}'.format(
             payload))
 
@@ -285,7 +285,7 @@ def mqtt_device_run(args, keyPayload):
         client.disconnect()
         client = get_client(
             args.project_id, args.cloud_region,
-            args.registry_id, args.device_id, args.private_key_file,
+            args.registry_id, registrationDeviceID, registrationPrivateKey,
             args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
             args.mqtt_bridge_port)
     # [END iot_mqtt_jwt_refresh]
