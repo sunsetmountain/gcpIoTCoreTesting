@@ -264,7 +264,7 @@ def mqtt_device_run(args, keyPayload):
     jwt_exp_mins = args.jwt_expires_minutes
     client = get_client(
         args.project_id, args.cloud_region, args.registry_id,
-        args.device_id, args.private_key_file, args.algorithm,
+        registrationDeviceID, registrationPublicKey, args.algorithm,
         args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     # Publish num_messages messages to the MQTT bridge.
@@ -318,7 +318,7 @@ def main():
     key2 = file.read()
     file.close()
     
-    # write public keys to JSON format
+    # convert public keys to JSON format
     data = {}
     data['certs'] = []
     data['certs'].append({
@@ -331,7 +331,7 @@ def main():
     })
     keyPayload = json.dumps(data)
     
-    mqtt_device_run(args,keyPayload)
+    mqtt_device_run(args,keyPayload,registrationDeviceID,registrationPublicKey)
     print('Finished.')
 
 
