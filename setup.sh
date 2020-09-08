@@ -11,7 +11,5 @@ git clone https://github.com/sunsetmountain/gcpIoTCoreTesting
 cd gcpIoTCoreTesting
 
 # run initial setup scripts
-chmod +x generateInitialKeys.sh initialSoftware.sh getGoogleKey.sh launchTest.sh 
+chmod +x initialSoftware.sh launchTest.sh 
 ./initialSoftware.sh
-./getGoogleKey.sh
-./generateInitialKeys.sh
