@@ -307,7 +307,7 @@ def main():
     with open('initialRegistration.json', "r") as f:
             data = json.load(f)
             registrationDeviceID = data["device-id"]
-            registrationPublicKey = data["public-key"]
+            registrationPrivateKey = data["private-key"]
     f.close()
     
     # read public keys
@@ -331,7 +331,7 @@ def main():
     })
     keyPayload = json.dumps(data)
     
-    mqtt_device_run(args,keyPayload,registrationDeviceID,registrationPublicKey)
+    mqtt_device_run(args,keyPayload,registrationDeviceID,registrationPrivateKey)
     print('Finished.')
 
 
