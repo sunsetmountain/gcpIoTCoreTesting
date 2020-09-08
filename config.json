@@ -1,0 +1,7 @@
+{
+	"private-key": "../ec_public.pem",
+	"cloud-region": "edit-cloud-region",
+	"project-id": "edit-project-id",
+	"device-id": "edit-device-id",
+	"registry-id": "edit-registry-id"
+}
