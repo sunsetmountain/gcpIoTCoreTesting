@@ -326,13 +326,17 @@ def main():
     key2 = file.read()
     file.close()
     
-    # convert public keys to JSON format
+    # convert public keys and other needed information to JSON format
     data = {}
     data['certs'] = {}
     data['certs'].update({
         'device-id': args.device_id,
         'at_bat': key1,
-        'on_deck': key2
+        'on_deck': key2,
+        'project-id': args.project_id,
+        'cloud-region': args.cloud_region,
+        'registry-id': args.registry_id,
+        'device-id': args.device_id
     })
     keyPayload = json.dumps(data)
     
