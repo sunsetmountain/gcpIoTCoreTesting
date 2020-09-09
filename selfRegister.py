@@ -328,8 +328,8 @@ def main():
     
     # convert public keys to JSON format
     data = {}
-    data['certs'] = []
-    data['certs'].append({
+    data['certs'] = {}
+    data['certs'].update({
         'device-id': args.device_id,
         'at_bat': key1,
         'on_deck': key2
