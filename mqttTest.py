@@ -321,16 +321,16 @@ def check_for_cert_rotation(cert_expires_minutes):
         at_bat_cert_iat=datetime.datetime.utcfromtimestamp(at_bat_dt) # convert the datetime stamp to UTC
         on_deck_dt=os.path.getmtime('ec_public_on_deck.pem')
         on_deck_cert_iat=datetime.datetime.utcfromtimestamp(on_deck_dt)
-        print('At-bat cert issued at: {}'.format(at_bat_cert_iat))
-        print('On-deck cert issued at: {}'.format(on_deck_cert_iat))
+        #print('At-bat cert issued at: {}'.format(at_bat_cert_iat))
+        #print('On-deck cert issued at: {}'.format(on_deck_cert_iat))
         timeNow=datetime.datetime.utcnow()
-        print('UTC now: {}'.format(timeNow))
+        #print('UTC now: {}'.format(timeNow))
         at_bat_time_difference = timeNow - at_bat_cert_iat
         at_bat_seconds_since_issue = at_bat_time_difference.days * 24 * 3600 + at_bat_time_difference.seconds
         on_deck_time_difference = timeNow - on_deck_cert_iat
         on_deck_seconds_since_issue = on_deck_time_difference.days * 24 * 3600 + on_deck_time_difference.seconds
-        print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
-        print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
+        #print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
+        #print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
         
         if at_bat_seconds_since_issue > 60 * cert_expires_minutes:
             print('Refreshing cert after {}s'.format(at_bat_seconds_since_issue))
