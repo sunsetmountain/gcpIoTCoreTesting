@@ -19,6 +19,6 @@ Make sure that the device-id on the device has a match in the IoT Core registry 
 
 Key rotation capabilities haven't yet been fully added to the code, but the idea is on-deck would copy to at-bat and at-bat would copy to on-base and then a new on-deck key would be created. This would need to be communicated with IoT Core.
 
-Use ./launchTest.sh to test out the functionality
+Use python3 launch.py to test out the functionality
 
 To test out self-registration capabilities, edit initialRegistration.json, obtain provisioning private/public keys (storage location is TBD -- place them in the .ssh directory) and use startSelfRegistration.py to run the functionality.
