@@ -271,8 +271,8 @@ def mqtt_device_run(args, keyPayload, registrationDeviceID, registrationPrivateK
     # Process network events.
     client.loop()
 
-    payload = '{}/{}-payload-{}'.format(
-            args.registry_id, registrationDeviceID, keyPayload)
+    payload = '{}'.format(
+            keyPayload)
     print('Publishing message: {}'.format(
             payload))
 
