@@ -323,13 +323,8 @@ def main():
     data['certs'] = []
     data['certs'].append({
         'device-id': args.device_id,
-        'key-name': 'at_bat',
-        'key': key1
-    })
-    data['certs'].append({
-        'device-id': args.device_id,
-        'key-name': 'on_deck',        
-        'key': key2
+        'at_bat': key1,
+        'on_deck': key2
     })
     keyPayload = json.dumps(data)
     
