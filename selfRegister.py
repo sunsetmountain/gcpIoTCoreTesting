@@ -336,7 +336,6 @@ def main():
         'project-id': args.project_id,
         'cloud-region': args.cloud_region,
         'registry-id': args.registry_id,
-        'device-id': args.device_id
     })
     keyPayload = json.dumps(data)
     
