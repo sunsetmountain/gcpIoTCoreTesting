@@ -240,13 +240,21 @@ def parse_command_line_args():
     parser.add_argument(
             '--registry_id', required=True, help='Cloud IoT Core registry id')
     parser.add_argument(
+            '--registration_key_file',
+            required=True,
+            help='Path to the key of the registration_device_id.')
+    parser.add_argument(
+            '--registration_device_id',
+            required=True,
+            help='Device ID to use for registration process.')
+    parser.add_argument(
             '--service_account_json',
             default=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
             help='Path to service account json file.')
 
     return parser.parse_args()
 
-def mqtt_device_run(args, keyPayload, registrationDeviceID, registrationPrivateKey):
+def mqtt_device_run(args, keyPayload):
     """Connects a device, sends data, and receives data."""
     # [START iot_mqtt_run]
     global minimum_backoff_time
@@ -257,6 +265,9 @@ def mqtt_device_run(args, keyPayload, registrationDeviceID, registrationPrivateK
     sub_topic = 'events/test-cert-info'
 
     mqtt_topic = '/devices/{}/{}'.format(registrationDeviceID, sub_topic)
+    
+    registrationDeviceID = args.registration_device_id
+    registrationPrivateKey = args.registration_key_file
 
     #cert_iat = datetime.datetime.utcnow()
     #cert_exp_mins = args.cert_expires_minutes
@@ -304,11 +315,11 @@ def mqtt_device_run(args, keyPayload, registrationDeviceID, registrationPrivateK
 def main():
     args = parse_command_line_args()
     
-    with open('initialRegistration.json', "r") as f:
-            data = json.load(f)
-            registrationDeviceID = data["device-id"]
-            registrationPrivateKey = data["private-key"]
-    f.close()
+    #with open('initialRegistration.json', "r") as f:
+    #        data = json.load(f)
+    #        registrationDeviceID = data["device-id"]
+    #        registrationPrivateKey = data["private-key"]
+    #f.close()
     
     # read public keys
     file = open("ec_public_at_bat.pem", "r")
@@ -328,7 +339,7 @@ def main():
     })
     keyPayload = json.dumps(data)
     
-    mqtt_device_run(args,keyPayload,registrationDeviceID,registrationPrivateKey)
+    mqtt_device_run(args,keyPayload)
     print('Finished.')
 
 
