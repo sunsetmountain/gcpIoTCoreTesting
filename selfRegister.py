@@ -242,7 +242,7 @@ def parse_command_line_args():
     parser.add_argument(
             '--registration_key_file',
             required=True,
-            help='Path to the key of the registration_device_id.')
+            help='Path to the private key of the registration_device_id.')
     parser.add_argument(
             '--registration_device_id',
             required=True,
@@ -264,10 +264,7 @@ def mqtt_device_run(args, keyPayload):
     #sub_topic = 'events' if args.message_type == 'event' else 'state'
     sub_topic = 'events/test-cert-info'
 
-    mqtt_topic = '/devices/{}/{}'.format(registrationDeviceID, sub_topic)
-    
-    registrationDeviceID = args.registration_device_id
-    registrationPrivateKey = args.registration_key_file
+    mqtt_topic = '/devices/{}/{}'.format(args.registration_device_id, sub_topic)
 
     #cert_iat = datetime.datetime.utcnow()
     #cert_exp_mins = args.cert_expires_minutes
@@ -275,7 +272,7 @@ def mqtt_device_run(args, keyPayload):
     jwt_exp_mins = args.jwt_expires_minutes
     client = get_client(
         args.project_id, args.cloud_region, args.registry_id,
-        registrationDeviceID, registrationPrivateKey, args.algorithm,
+        args.registration_device_id, args.registration_key_file, args.algorithm,
         args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     # Publish num_messages messages to the MQTT bridge.
@@ -296,7 +293,7 @@ def mqtt_device_run(args, keyPayload):
         client.disconnect()
         client = get_client(
             args.project_id, args.cloud_region,
-            args.registry_id, registrationDeviceID, registrationPrivateKey,
+            args.registry_id, args.registration_device_id, args.registration_key_file,
             args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
             args.mqtt_bridge_port)
     # [END iot_mqtt_jwt_refresh]
