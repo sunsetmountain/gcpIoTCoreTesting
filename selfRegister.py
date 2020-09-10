@@ -247,10 +247,6 @@ def parse_command_line_args():
             '--registration_device_id',
             required=True,
             help='Device ID to use for registration process.')
-    parser.add_argument(
-            '--service_account_json',
-            default=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
-            help='Path to service account json file.')
 
     return parser.parse_args()
 
