@@ -239,10 +239,6 @@ def parse_command_line_args():
             help='GCP cloud project name')
     parser.add_argument(
             '--registry_id', required=True, help='Cloud IoT Core registry id')
-    parser.add_argument(
-            '--service_account_json',
-            default=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"),
-            help='Path to service account json file.')
 
     return parser.parse_args()
 
