@@ -418,7 +418,7 @@ def mqtt_device_run(args):
         # Check if refresh is already in progress
         if key_rotation_in_progress == False:
             # See if the current cert should be rotated out -- if so, return the filename of the backup key to use during cert rotation
-            key_to_use_going_forward = check_for_cert_rotation(current_key_file, args.cert_expires_minutes)
+            key_to_use_going_forward = rotate_cert_check(current_key_file, args.cert_expires_minutes)
         
             if key_to_use_going_forward != current_key_file:
                 key_rotation_in_progress = True
