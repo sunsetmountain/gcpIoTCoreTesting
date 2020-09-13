@@ -242,12 +242,52 @@ def parse_command_line_args():
 
     return parser.parse_args()
 
-def mqtt_device_cert_update(args):
+def mqtt_device_cert_update(args, key_to_use_temporarily):
     """Connects a device, sends data, and receives data."""
     # [START iot_mqtt_run]
     global minimum_backoff_time
     global MAXIMUM_BACKOFF_TIME
 
+    # Rotate keys
+    cmd = "./rotateKeys.sh"
+    print(cmd)
+    os.system(cmd)
+    
+    # Allow time for keys to be generated and rotate
+    for i in range(0, 10):
+    time.sleep(1)
+    
+    # read public keys
+    file = open("ec_public_at_bat.pem", "r")
+    key1 = file.read()
+    file.close()
+    file = open("ec_public_on_deck.pem", "r")
+    key2 = file.read()
+    file.close()
+    file = open("ec_public_on_base.pem", "r")
+    key3 = file.read()
+    file.close()
+    
+    # convert public keys and other needed information to JSON format
+    data = {}
+    data['certs'] = {}
+    data['certs'].update({
+        'device-id': args.device_id,
+        'at_bat': key1,
+        'on_deck': key2,
+        'on_base': key3,
+        'project-id': args.project_id,
+        'cloud-region': args.cloud_region,
+        'registry-id': args.registry_id,
+    })
+    keyPayload = json.dumps(data)
+    
+    mqtt_device_run(args,keyPayload)
+    print('Keys rotated')
+    
+    key_to_use_temporarily = "ec_public_on_base.pem"
+
+    
     # Publish to the events or state topic based on the flag.
     #sub_topic = 'events' if args.message_type == 'event' else 'state'
     sub_topic = 'events/test-cert-info' # topic for cert updates
@@ -260,30 +300,16 @@ def mqtt_device_cert_update(args):
     jwt_exp_mins = args.jwt_expires_minutes
     client = get_client(
         args.project_id, args.cloud_region, args.registry_id,
-        args.device_id, args.private_key_file, args.algorithm,
+        args.device_id, key_to_use_temporarily, args.algorithm,
         args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     # Process network events.
     client.loop()
 
-    ## Wait if backoff is required.
-    #if should_backoff:
-    #    # If backoff time is too large, give up.
-    #    if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
-    #        print('Exceeded maximum backoff time. Giving up.')
-    #        break
-
-    #    # Otherwise, wait and connect again.
-    #    delay = minimum_backoff_time + random.randint(0, 1000) / 1000.0
-    #    print('Waiting for {} before reconnecting.'.format(delay))
-    #    time.sleep(delay)
-    #    minimum_backoff_time *= 2
-    #    client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
-
-    payload = '{}/{}-payload-{}'.format(
-            args.registry_id, args.device_id, i)
-    print('Publishing message {}/{}: \'{}\''.format(
-            i, args.num_messages, payload))
+    payload = '{}'.format(
+            keyPayload)
+    print('Publishing message: {}'.format(
+            payload))
 
     # [START iot_mqtt_jwt_refresh]
     seconds_since_issue = (datetime.datetime.utcnow() - jwt_iat).seconds
@@ -294,7 +320,7 @@ def mqtt_device_cert_update(args):
         client.disconnect()
         client = get_client(
             args.project_id, args.cloud_region,
-            args.registry_id, args.device_id, args.private_key_file,
+            args.registry_id, args.device_id, key_to_use_temporarily,
             args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
             args.mqtt_bridge_port)
     # [END iot_mqtt_jwt_refresh]
@@ -309,30 +335,32 @@ def mqtt_device_cert_update(args):
         time.sleep(1)
         client.loop() # Gives the Paho MQTT client time to read to/write from buffers
     # [END iot_mqtt_cert_update]
+    
+    return key_to_use_temporarily
 
-def check_for_cert_rotation(cert_expires_minutes):
+def rotate_cert_check(current_key, cert_expires_minutes):
         # [START check_for_cert_rotation]
         # Find the amount of time since a cert was issued
-        at_bat_dt=os.path.getmtime('ec_public_at_bat.pem') # get the datetime stamp on the public key file
+        at_bat_dt=os.path.getmtime(current_key) # get the datetime stamp on the public key file
         at_bat_cert_iat=datetime.datetime.utcfromtimestamp(at_bat_dt) # convert the datetime stamp to UTC
-        on_deck_dt=os.path.getmtime('ec_public_on_deck.pem')
-        on_deck_cert_iat=datetime.datetime.utcfromtimestamp(on_deck_dt)
+        #on_deck_dt=os.path.getmtime('ec_public_on_deck.pem')
+        #on_deck_cert_iat=datetime.datetime.utcfromtimestamp(on_deck_dt)
         #print('At-bat cert issued at: {}'.format(at_bat_cert_iat))
         #print('On-deck cert issued at: {}'.format(on_deck_cert_iat))
         timeNow=datetime.datetime.utcnow()
         #print('UTC now: {}'.format(timeNow))
         at_bat_time_difference = timeNow - at_bat_cert_iat
         at_bat_seconds_since_issue = at_bat_time_difference.days * 24 * 3600 + at_bat_time_difference.seconds
-        on_deck_time_difference = timeNow - on_deck_cert_iat
-        on_deck_seconds_since_issue = on_deck_time_difference.days * 24 * 3600 + on_deck_time_difference.seconds
+        #on_deck_time_difference = timeNow - on_deck_cert_iat
+        #on_deck_seconds_since_issue = on_deck_time_difference.days * 24 * 3600 + on_deck_time_difference.seconds
         #print('Seconds since at-bat cert issued: {}'.format(at_bat_seconds_since_issue))
         #print('Seconds since on-deck cert issued: {}'.format(on_deck_seconds_since_issue))
         
         if at_bat_seconds_since_issue > 60 * cert_expires_minutes:
             print('Refreshing cert after {}s'.format(at_bat_seconds_since_issue))
-            return True
+            return "ec_public_on_deck.pem"
         else:
-            return False
+            return current_key
         # [END check_for_cert_rotation]
 
 def mqtt_device_run(args):
@@ -340,6 +368,12 @@ def mqtt_device_run(args):
     # [START iot_mqtt_run]
     global minimum_backoff_time
     global MAXIMUM_BACKOFF_TIME
+    
+    # Which key should be used
+    current_key_file = args.private_key_file
+    
+    # Whether key rotation is currently underway
+    key_rotation_in_progress = False
 
     # Publish to the events or state topic based on the flag.
     sub_topic = 'events' if args.message_type == 'event' else 'state'
@@ -353,7 +387,7 @@ def mqtt_device_run(args):
     jwt_exp_mins = args.jwt_expires_minutes
     client = get_client(
         args.project_id, args.cloud_region, args.registry_id,
-        args.device_id, args.private_key_file, args.algorithm,
+        args.device_id, current_key_file, args.algorithm,
         args.ca_certs, args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     # Publish num_messages messages to the MQTT bridge.
@@ -381,19 +415,23 @@ def mqtt_device_run(args):
                 i, args.num_messages, payload))
 
         ## [START iot_mqtt_cert_refresh]
-        # Find the amount of time since a cert was issued
-        time_to_rotate_cert = check_for_cert_rotation(args.cert_expires_minutes)
+        # Check if refresh is already in progress
+        if key_rotation_in_progress == False:
+            # See if the current cert should be rotated out -- if so, return the filename of the backup key to use during cert rotation
+            key_to_use_going_forward = check_for_cert_rotation(current_key_file, args.cert_expires_minutes)
         
-        if time_to_rotate_cert == True:
-            #mqtt_device_cert_update()
-        #    ##Create new certs and send them upstream
-            client.loop()
-            client.disconnect()
-            client = get_client(
-                args.project_id, args.cloud_region,
-                args.registry_id, args.device_id, args.private_key_file,
-                args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
-                args.mqtt_bridge_port)
+            if key_to_use_going_forward != current_key_file:
+                key_rotation_in_progress = True
+                
+                #Create new certs and send them upstream
+                current_key_file = mqtt_device_cert_update(args, key_to_use_going_forward)
+                client.loop()
+                client.disconnect()
+                client = get_client(
+                    args.project_id, args.cloud_region,
+                    args.registry_id, args.device_id, current_key_file,
+                    args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
+                    args.mqtt_bridge_port)
         ## [END iot_mqtt_cert_refresh]
         
         # [START iot_mqtt_jwt_refresh]
@@ -405,7 +443,7 @@ def mqtt_device_run(args):
             client.disconnect()
             client = get_client(
                 args.project_id, args.cloud_region,
-                args.registry_id, args.device_id, args.private_key_file,
+                args.registry_id, args.device_id, current_key_file,
                 args.algorithm, args.ca_certs, args.mqtt_bridge_hostname,
                 args.mqtt_bridge_port)
         # [END iot_mqtt_jwt_refresh]
