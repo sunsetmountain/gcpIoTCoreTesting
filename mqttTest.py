@@ -255,7 +255,7 @@ def mqtt_device_cert_update(args, key_to_use_temporarily):
     
     # Allow time for keys to be generated and rotate
     for i in range(0, 10):
-    time.sleep(1)
+        time.sleep(1)
     
     # read public keys
     file = open("ec_public_at_bat.pem", "r")
