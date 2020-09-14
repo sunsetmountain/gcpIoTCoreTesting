@@ -1,6 +1,6 @@
 # GCP IoT Core testing
 
-For simple IoT Core communication testing. This document assumes that a project and IoT Core registry are already setup (this involves enabling APIs for IoT Core, Cloud Functions, GCE and the Google Cloud IoT API).
+For simple IoT Core communication testing. This document assumes that a project and IoT Core registry are already setup (this involves enabling APIs for IoT Core, Cloud Functions, GCE and the Google Cloud IoT API along with creating PubSub topics for events, state and cert-info).
 
 From the IoT device...
 
