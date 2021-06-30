@@ -1,6 +1,6 @@
 # GCP IoT Core testing
 
-Purpose: To conduct basic IoT Core setup and simple communication testing using a VM in GCP with IoT Core
+<H2>Purpose: To conduct basic IoT Core setup and simple communication testing using a VM in GCP with IoT Core</H2>
 
 Setup a GCP project to use for testing...
 - Create a project and enable billing
