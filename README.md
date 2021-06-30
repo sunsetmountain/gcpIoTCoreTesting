@@ -20,11 +20,11 @@
 - From the command line of the VM, issue the following commands...
 
 <block>
-sudo apt-get -y install git<
-git clone https://github.com/sunsetmountain/gcpIoTCoreTesting
-cd gcpIoTCoreTesting
-chmod +x initialSoftware.sh launchTest.sh 
-./initialSoftware.sh
+sudo apt-get -y install git<br/>
+git clone https://github.com/sunsetmountain/gcpIoTCoreTesting<br/>
+cd gcpIoTCoreTesting<br/>
+chmod +x initialSoftware.sh launchTest.sh <br/>
+./initialSoftware.sh<br/>
 </block>
 
 <br/>
