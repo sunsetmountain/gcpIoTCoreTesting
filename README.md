@@ -38,7 +38,7 @@ Go to IoT Core, then to Devices...
 - Create a new device ensuring that the device-id matches what was put into the config.json file
 - Expand the Communication, Cloud Logging, Authentication area during device creation
 - In the Authentication section, select a Public key format of ES256
-- Past the key value into the the text box
+- Paste the key value into the the text box
 - Click on the Create button
 
 
