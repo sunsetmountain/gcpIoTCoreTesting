@@ -1,20 +1,20 @@
 # GCP IoT Core testing
 
-<H2>Purpose: To conduct basic IoT Core setup and simple communication testing using a VM in GCP with IoT Core</H2>
+<b>Purpose: To conduct basic IoT Core setup and simple communication testing using a VM in GCP with IoT Core</b>
 
-Setup a GCP project to use for testing...
+<b>Setup a GCP project to use for testing...</b>
 - Create a project and enable billing
 - Go to APIs & Services -- enable the APIs for IoT Core, Cloud Functions and Compute Engine
 
-Setup PubSub topics...
+<b>Setup PubSub topics...</b>
 - Go to Pub/Sub
 - Create three topics (test-events, test-cert-info and test-state)
 
-Setup IoT Core...
+<b>Setup IoT Core...<b>
 - Go to IoT Core
 - Create a registry (test-registry), assign the PubSub topics during creation
 
-Setup a VM to use as a test "IoT device"...
+<b>Setup a VM to use as a test "IoT device"...</b>
 - Go to Compute Engine and create a VM (minimal size, Linux)
 - SSH into the VM
 - From the command line of the VM, issue the following commands...
@@ -34,7 +34,7 @@ cat ec_public_at_bat.pem
 
 copy the text in the file to the clipboard
 
-Go to IoT Core, then to Devices...
+  <b>Go to IoT Core, then to Devices...</b>
 - Create a new device ensuring that the device-id matches what was put into the config.json file
 - Expand the Communication, Cloud Logging, Authentication area during device creation
 - In the Authentication section, select a Public key format of ES256
@@ -42,7 +42,7 @@ Go to IoT Core, then to Devices...
 - Click on the Create button
 
 
-Registering devices/rotating keys...
+  <b>Registering devices/rotating keys...</b>
 
 The first time the IoT device is used, there needs to be a way to trust that the device is known and then to register the initial keys that will be unique to the device. The code provided assumes that a device will be registered with IoT Core along with an associated certificate and this cert/device-id will be placed on new IoT devices to allow them to send a secure message to IoT Core announcing their own unique device ID and key(s). Functionality would need to be implemented (e.g. via a Function such as in https://github.com/sunsetmountain/gcpIoTCoreAddDeviceFunction) that monitors for new device registration messages and then takes care of registering the device. To test out client-side self-registration capabilities, edit initialRegistration.json, obtain provisioning private/public keys (storage location is TBD -- place them in the .ssh directory) and use startSelfRegistration.py to run the functionality.
 
@@ -50,6 +50,6 @@ The current code is geared towards creating and rotating self-signed keys on the
 
 
 
-Testing functionality...
+<b>Testing functionality...</b>
 
 Use python3 launch.py to test out the functionality
