@@ -43,7 +43,7 @@ copy the text in the file to the clipboard
 - Click on the Create button
 
 
-  <b>Registering devices/rotating keys...</b>
+<b>Registering devices/rotating keys...</b>
 
 The first time the IoT device is used, there needs to be a way to trust that the device is known and then to register the initial keys that will be unique to the device. The code provided assumes that a device will be registered with IoT Core along with an associated certificate and this cert/device-id will be placed on new IoT devices to allow them to send a secure message to IoT Core announcing their own unique device ID and key(s). Functionality would need to be implemented (e.g. via a Function such as in https://github.com/sunsetmountain/gcpIoTCoreAddDeviceFunction) that monitors for new device registration messages and then takes care of registering the device. To test out client-side self-registration capabilities, edit initialRegistration.json, obtain provisioning private/public keys (storage location is TBD -- place them in the .ssh directory) and use startSelfRegistration.py to run the functionality.
 
