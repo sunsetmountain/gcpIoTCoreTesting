@@ -44,9 +44,10 @@ Go to IoT Core, then to Devices...
 
 Registering devices/rotating keys...
 
+The first time the IoT device is used, there needs to be a way to trust that the device is known and then to register the initial keys that will be unique to the device. The code provided assumes that a device will be registered with IoT Core along with an associated certificate and this cert/device-id will be placed on new IoT devices to allow them to send a secure message to IoT Core announcing their own unique device ID and key(s). Functionality would need to be implemented (e.g. via a Function such as in https://github.com/sunsetmountain/gcpIoTCoreAddDeviceFunction) that monitors for new device registration messages and then takes care of registering the device. To test out client-side self-registration capabilities, edit initialRegistration.json, obtain provisioning private/public keys (storage location is TBD -- place them in the .ssh directory) and use startSelfRegistration.py to run the functionality.
+
 The current code is geared towards creating and rotating self-signed keys on the device that will then been rotated periodically by the client code and the changes communicated through IoT core. Three sets of keys are generated when the initialSoftware.sh script is run and the device code contains the ability to rotate keys by sending them update through a PubSub message to the test-cert-info queue. A function would need to process the change and update the device.
 
-Additionally, the first time the IoT device is used, there needs to be a way to trust that the device is known and then to register the initial keys that will be unique to the device. The code provided assumes that a device will be registered with IoT Core along with an associated certificate and this cert/device-id will be placed on new IoT devices to allow them to send a secure message to IoT Core announcing their own unique device ID and key(s). Functionality would need to be implemented (e.g. via a Function) that monitors for new device registration messages and then takes care of registering the device. To test out client-side self-registration capabilities, edit initialRegistration.json, obtain provisioning private/public keys (storage location is TBD -- place them in the .ssh directory) and use startSelfRegistration.py to run the functionality.
 
 
 Testing functionality...
