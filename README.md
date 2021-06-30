@@ -17,7 +17,7 @@
 <b>Setup a VM to use as a test "IoT device"...</b>
 - Go to Compute Engine and create a VM (minimal size, Linux)
 - SSH into the VM
-- From the command line of the VM, issue the following commands...
+- From the command line of the VM, issue the following commands (or use the setup.sh script in this repository -- copy it to the device in the directory where gcpIoTCoreTesting will go, chmod +x setup.sh and ./setup.sh)...
 
 <block>
 sudo apt-get -y install git<br/>
@@ -28,8 +28,6 @@ chmod +x initialSoftware.sh launchTest.sh <br/>
 </block>
 
 <br/>
-
-(or use the setup.sh script in this repository -- copy it to the device in the directory where gcpIoTCoreTesting will go, chmod +x setup.sh and ./setup.sh)
 
 Edit the config.json file and replace cloud-region, project-id, device-id and registry-id
 
