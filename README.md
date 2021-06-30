@@ -10,7 +10,7 @@
 - Go to Pub/Sub
 - Create three topics (test-events, test-cert-info and test-state)
 
-<b>Setup IoT Core...<b>
+<b>Setup IoT Core...</b>
 - Go to IoT Core
 - Create a registry (test-registry), assign the PubSub topics during creation
 
