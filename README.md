@@ -49,7 +49,9 @@ The first time the IoT device is used, there needs to be a way to trust that the
 
 The current code is geared towards creating and rotating self-signed keys on the device that will then been rotated periodically by the client code and the changes communicated through IoT core. Three sets of keys are generated when the initialSoftware.sh script is run and the device code contains the ability to rotate keys by sending them update through a PubSub message to the test-cert-info queue. A function would need to process the change and update the device.
 
+<b>Issuing commands to devices...</b>
 
+Responding to a command isn't currently implemented in the client code. Triggering a command from IoT Core to a device can be implemented through a Cloud Function such as the example code at https://github.com/sunsetmountain/gcpIoTCoreCommandFunction
 
 <b>Testing functionality...</b>
 
