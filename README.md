@@ -4,6 +4,12 @@
 
 <b>Setup a GCP project to use for testing...</b>
 - Create a project and enable billing
+
+<b>Options on how to proceed...</b>
+1. Follow the below to walk through setting up the necessary infrastructure in order to gain a hands-on walk through of the elements needed
+2. Download and execute the Terraform contained within the repository and then skip to SSH'ing into the VM to complete the VM setup
+
+<b>Enable the necessary APIs
 - Go to APIs & Services -- enable the APIs for IoT Core, Cloud Functions and Compute Engine
 
 <b>Setup PubSub topics...</b>
